@@ -1,23 +1,78 @@
-<h1>{{title}}</h1>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm</title>
+    <style>
+        /* Toàn bộ bảng */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
 
-<a href="/add">Thêm</a>
+        /* Định dạng cho các ô của bảng */
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
 
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Tên sản phẩm</th>
-        <th>Giá</th>
-        <th>Loại</th>
-        <th>Thao tác</th>
-    </tr>
-    {{#each list}}
-    <tr>
-        <td>{{_id}}</td>
-        <td>{{name}}</td>
-        <td>{{price}}</td>
-        <td>{{category.name}}</td>
-        <td><a href>Sửa</a> | <a href="/delete/{{_id}}">Xóa</a></td>
-    </tr>
-    {{/each}}
+        /* Định dạng cho tiêu đề bảng */
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
 
-</table>
+        /* Định dạng cho hàng trong bảng khi di chuột qua */
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Định dạng cho liên kết */
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Định dạng cho tiêu đề */
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{title}}</h1>
+
+    <a href="/add">Thêm</a>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Tên sản phẩm</th>
+            <th>Giá</th>
+            <th>Loại</th>
+            <th>Thao tác</th>
+        </tr>
+        {{#each list}}
+        <tr>
+            <td>{{_id}}</td>
+            <td>{{name}}</td>
+            <td>{{price}}</td>
+            <td>{{category.name}}</td>
+            <td><a href="#">Sửa</a> | <a href="/delete/{{_id}}">Xóa</a></td>
+        </tr>
+        {{/each}}
+    </table>
+</body>
+</html>

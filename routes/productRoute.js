@@ -1,13 +1,61 @@
-var express = require("express");
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var productModel = require("../models/product");
-var categoryModel = require("../models/category");
+const productModel = require('../models/product');
+const categoryModel = require('../models/category');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Product
+ *   description: API để quản lý sản phẩm
+ */
 
-
-// add product
-router.post("/add", async function (req, res, next) {
+/**
+ * @swagger
+ * /products/add:
+ *   post:
+ *     tags: [Product]
+ *     summary: Thêm một sản phẩm mới
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               price:
+ *                 type: integer
+ *               quantity:
+ *                 type: integer
+ *               image:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Sản phẩm đã được thêm thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 price:
+ *                   type: integer
+ *                 quantity:
+ *                   type: integer
+ *                 image:
+ *                   type: string
+ *                 category:
+ *                   type: string
+ *       400:
+ *         description: Lỗi khi tạo sản phẩm
+ */
+router.post('/add', async function(req, res, next) {
   const { name, price, quantity, image, category } = req.body;
 
   const newProduct = { name, price, quantity, image, category };
@@ -16,108 +64,272 @@ router.post("/add", async function (req, res, next) {
     await productModel.create(newProduct);
     res.status(200).json(newProduct);
   } catch (e) {
-    res.status(400).json({ error: "Lỗi khi tạo sản phẩm" });
+    res.status(400).json({ error: 'Lỗi khi tạo sản phẩm' });
   }
 });
 
-// Lấy thông tin của tất cả các sản phẩm
-// http://localhost:5000/san-pham/list
-router.get("/list", async function (req, res, next) {
+/**
+ * @swagger
+ * /products/list:
+ *   get:
+ *     tags: [Product]
+ *     summary: Lấy danh sách tất cả sản phẩm
+ *     responses:
+ *       200:
+ *         description: Danh sách sản phẩm
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                   price:
+ *                     type: integer
+ *                   quantity:
+ *                     type: integer
+ *                   image:
+ *                     type: string
+ *                   category:
+ *                     type: string
+ */
+router.get('/list', async function(req, res, next) {
   try {
-    const list = await productModel.find().populate("category");
+    const list = await productModel.find().populate('category');
     res.status(200).json(list);
   } catch (e) {
-    res.status(400).json({ error: "Lỗi" });
+    res.status(400).json({ error: 'Lỗi' });
   }
 });
 
-// Lấy thông tin sản phẩm theo ID
-router.get("/detail-find-by-id/:id", async function (req, res, next) {
+/**
+ * @swagger
+ * /products/detail-find-by-id/{id}:
+ *   get:
+ *     tags: [Product]
+ *     summary: Lấy thông tin sản phẩm theo ID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID của sản phẩm
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Thông tin sản phẩm
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 product:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     price:
+ *                       type: integer
+ *                     quantity:
+ *                       type: integer
+ *                     image:
+ *                       type: string
+ *                     category:
+ *                       type: string
+ *       404:
+ *         description: Sản phẩm không tồn tại
+ */
+router.get('/detail-find-by-id/:id', async function(req, res, next) {
   try {
     const id = req.params.id;
-    const product = await productModel.findById(id).populate("category");
+    const product = await productModel.findById(id).populate('category');
     if (!product) {
-      return res
-        .status(404)
-        .json({ status: false, message: "Sản phẩm không tồn tại" });
+      return res.status(404).json({ status: false, message: 'Sản phẩm không tồn tại' });
     }
-    res.status(200).json({ status: true, message: "Thành công", product });
+    res.status(200).json({ status: true, message: 'Thành công', product });
   } catch (e) {
-    res.status(400).json({ status: false, message: "Thất bại" });
+    res.status(400).json({ status: false, message: 'Thất bại' });
   }
 });
 
-// Lấy tên và giá của tất cả các sản phẩm
-router.get("/list-product-name-price", async function (req, res, next) {
+/**
+ * @swagger
+ * /products/list-product-name-price:
+ *   get:
+ *     tags: [Product]
+ *     summary: Lấy tên và giá của tất cả các sản phẩm
+ *     responses:
+ *       200:
+ *         description: Danh sách tên và giá sản phẩm
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       price:
+ *                         type: integer
+ *                       category:
+ *                         type: string
+ */
+router.get('/list-product-name-price', async function(req, res, next) {
   try {
     const data = await productModel
-      .find({}, "name price category")
-      .populate("category");
-    res.status(200).json({ status: true, message: "Thành công", data });
+      .find({}, 'name price category')
+      .populate('category');
+    res.status(200).json({ status: true, message: 'Thành công', data });
   } catch (e) {
-    res.status(400).json({ status: false, message: "Thất bại" });
+    res.status(400).json({ status: false, message: 'Thất bại' });
   }
 });
 
-// Lấy thông tin các sản phẩm có giá trên 10000
-router.get("/list-product-price-over-10000", async function (req, res, next) {
+/**
+ * @swagger
+ * /products/list-product-price-over-10000:
+ *   get:
+ *     tags: [Product]
+ *     summary: Lấy thông tin các sản phẩm có giá trên 10000
+ *     responses:
+ *       200:
+ *         description: Danh sách sản phẩm có giá trên 10000
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       price:
+ *                         type: integer
+ *                       quantity:
+ *                         type: integer
+ *                       image:
+ *                         type: string
+ *                       category:
+ *                         type: string
+ */
+router.get('/list-product-price-over-10000', async function(req, res, next) {
   try {
     const products = await productModel
       .find({ price: { $gt: 10000 } })
-      .populate("category");
-    res.status(200).json({ status: true, message: "Thành công", products });
+      .populate('category');
+    res.status(200).json({ status: true, message: 'Thành công', products });
   } catch (e) {
-    res.status(400).json({ status: false, message: "Thất bại" });
+    res.status(400).json({ status: false, message: 'Thất bại' });
   }
 });
 
-// Lấy thông tin các sản phẩm thuộc loại 'Bánh'
-// router.get("/list-product-category-banh", async function (req, res, next) {
-//   try {
-//     const products = await productModel
-//       .find({ category: "669810d327277dbba48f6c69" })
-//       .populate("category");
-//     res.status(200).json({ status: true, message: "Thành công", products });
-//   } catch (e) {
-//     res.status(400).json({ status: false, message: "Thất bại" });
-//   }
-// });
-
-router.get("/list-product-category-banh", async function (req, res, next) {
+/**
+ * @swagger
+ * /products/list-product-category-banh:
+ *   get:
+ *     tags: [Product]
+ *     summary: Lấy thông tin các sản phẩm thuộc loại 'Bánh'
+ *     responses:
+ *       200:
+ *         description: Danh sách sản phẩm thuộc loại 'Bánh'
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       price:
+ *                         type: integer
+ *                       quantity:
+ *                         type: integer
+ *                       image:
+ *                         type: string
+ *                       category:
+ *                         type: string
+ */
+router.get('/list-product-category-banh', async function(req, res, next) {
   try {
-    // Find the category with the name "bánh"
-    const category = await categoryModel.findOne({ name: "bánh" });
+    const category = await categoryModel.findOne({ name: 'bánh' });
 
     if (!category) {
-      return res
-        .status(404)
-        .json({ status: false, message: "Category not found" });
+      return res.status(404).json({ status: false, message: 'Category not found' });
     }
 
-    // Find products with the found category ID
     const products = await productModel
       .find({ category: category._id })
-      .populate("category");
+      .populate('category');
 
-    res.status(200).json({ status: true, message: "Thành công", products });
+    res.status(200).json({ status: true, message: 'Thành công', products });
   } catch (e) {
-    res.status(400).json({ status: false, message: "Thất bại" });
+    res.status(400).json({ status: false, message: 'Thất bại' });
   }
 });
 
-// Đếm số lượng sản phẩm trong mỗi loại (countDocuments)
-// router.get("/count-products-per-category", async function (req, res, next) {
-//   try {
-//     const counts = await productModel.aggregate([
-//       { $group: { _id: "$category", count: { $sum: 1 } } },
-//     ]);
-//     res.status(200).json({ status: true, message: "Thành công", counts });
-//   } catch (e) {
-//     res.status(400).json({ status: false, message: "Thất bại" });
-//   }
-// });
-
-// Lấy thông tin sản phẩm có số lượng ít hơn 10
+/**
+ * @swagger
+ * /products/list-product-quantity-less-10:
+ *   get:
+ *     tags: [Product]
+ *     summary: Lấy thông tin các sản phẩm có số lượng ít hơn 10
+ *     responses:
+ *       200:
+ *         description: Danh sách sản phẩm có số lượng ít hơn 10
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       price:
+ *                         type: integer
+ *                       quantity:
+ *                         type: integer
+ *                       image:
+ *                         type: string
+ *                       category:
+ *                         type: string
+ */
 router.get("/list-product-quantity-less-10", async function (req, res, next) {
   try {
     const products = await productModel

@@ -4,7 +4,64 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user'); // Make sure you have a User model set up
 
-// Register
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: API để quản lý xác thực người dùng
+ */
+
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Đăng ký người dùng mới
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: johndoe
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       201:
+ *         description: Đăng ký thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User registered successfully
+ *       400:
+ *         description: Người dùng đã tồn tại
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User already exists
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Server error
+ */
 router.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
@@ -28,7 +85,60 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Đăng nhập người dùng
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: johndoe
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Đăng nhập thành công và trả về JWT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login successful
+ *                 token:
+ *                   type: string
+ *                   example: <JWT token>
+ *       401:
+ *         description: Thông tin xác thực không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid credentials
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Server error
+ */
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 

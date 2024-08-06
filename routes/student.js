@@ -28,12 +28,95 @@ const listStudent = [
   },
 ];
 
-// Xem ds sinh viên
+/**
+ * @swagger
+ * tags:
+ *   name: Student
+ *   description: API để quản lý sinh viên
+ */
+
+/**
+ * @swagger
+ * /students/list:
+ *   get:
+ *     tags: [Student]
+ *     summary: Lấy danh sách sinh viên
+ *     responses:
+ *       200:
+ *         description: Trả về danh sách sinh viên
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   mssv:
+ *                     type: integer
+ *                   hoten:
+ *                     type: string
+ *                   lop:
+ *                     type: string
+ *                   dtb:
+ *                     type: number
+ *       400:
+ *         description: Lỗi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ */
 router.get("/list", function (req, res, next) {
   res.status(200).json(listStudent);
 });
 
-// Thêm sinh viên mới vào ds
+/**
+ * @swagger
+ * /students/add:
+ *   post:
+ *     tags: [Student]
+ *     summary: Thêm sinh viên mới vào danh sách
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               mssv:
+ *                 type: integer
+ *               hoten:
+ *                 type: string
+ *               lop:
+ *                 type: string
+ *               dtb:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Thêm sinh viên thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *       400:
+ *         description: Lỗi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ */
 router.post("/add", function (req, res, next) {
   const { mssv, hoten, lop, dtb } = req.body;
   const item = { mssv: mssv, hoten: hoten, lop: lop, dtb: dtb };
@@ -41,7 +124,43 @@ router.post("/add", function (req, res, next) {
   res.status(200).json(listStudent);
 });
 
-// Xóa sinh viên khỏi ds
+/**
+ * @swagger
+ * /students/delete/{mssv}:
+ *   delete:
+ *     tags: [Student]
+ *     summary: Xóa sinh viên khỏi danh sách
+ *     parameters:
+ *       - in: path
+ *         name: mssv
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: MSSV của sinh viên cần xóa
+ *     responses:
+ *       200:
+ *         description: Xóa sinh viên thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 listStudent:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       404:
+ *         description: Sinh viên không tồn tại
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 router.delete("/delete/:mssv", function (req, res) {
   const { mssv } = req.params;
   const index = listStudent.findIndex((p) => p.mssv == mssv);
@@ -53,16 +172,58 @@ router.delete("/delete/:mssv", function (req, res) {
   }
 });
 
-// Thay đổi thông tin sv trong ds
-// router.post('/edit', function (req, res) {
-//     const { mssv, hoten, lop, dtb } = req.body;
-//     const item = listStudent.find(p => p.mssv == mssv);
-//     item.hoten = hoten;
-//     item.lop = lop;
-//     item.dtb = dtb;
-//     res.json({ message: 'Sửa thông tin sinh viên thành công', listStudent });
-// })
-
+/**
+ * @swagger
+ * /students/update/{mssv}:
+ *   put:
+ *     tags: [Student]
+ *     summary: Cập nhật thông tin sinh viên
+ *     parameters:
+ *       - in: path
+ *         name: mssv
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: MSSV của sinh viên cần cập nhật
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               hoten:
+ *                 type: string
+ *               lop:
+ *                 type: string
+ *               dtb:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Cập nhật thông tin sinh viên thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mssv:
+ *                   type: integer
+ *                 hoten:
+ *                   type: string
+ *                 lop:
+ *                   type: string
+ *                 dtb:
+ *                   type: number
+ *       404:
+ *         description: Sinh viên không tồn tại
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 router.put("/update/:mssv", function (req, res) {
   const { mssv } = req.params;
   const { hoten, lop, dtb } = req.body;
@@ -75,7 +236,50 @@ router.put("/update/:mssv", function (req, res) {
   }
 });
 
-// Lấy thông tin chi tiết của 1 sv theo mssv
+/**
+ * @swagger
+ * /students/detail/{mssv}:
+ *   get:
+ *     tags: [Student]
+ *     summary: Lấy thông tin chi tiết của sinh viên theo MSSV
+ *     parameters:
+ *       - in: path
+ *         name: mssv
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: MSSV của sinh viên cần lấy thông tin
+ *     responses:
+ *       200:
+ *         description: Lấy thông tin sinh viên thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 item:
+ *                   type: object
+ *                   properties:
+ *                     mssv:
+ *                       type: integer
+ *                     hoten:
+ *                       type: string
+ *                     lop:
+ *                       type: string
+ *                     dtb:
+ *                       type: number
+ *       404:
+ *         description: Sinh viên không tồn tại
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 router.get("/detail/:mssv", function (req, res) {
   const { mssv } = req.params;
   const item = listStudent.find((p) => p.mssv == mssv);
@@ -86,6 +290,31 @@ router.get("/detail/:mssv", function (req, res) {
   }
 });
 
+/**
+ * @swagger
+ * /students/getList:
+ *   get:
+ *     tags: [Student]
+ *     summary: Lấy danh sách sinh viên có điểm trung bình từ 6.5 đến 8.0
+ *     responses:
+ *       200:
+ *         description: Trả về danh sách sinh viên
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   mssv:
+ *                     type: integer
+ *                   hoten:
+ *                     type: string
+ *                   lop:
+ *                     type: string
+ *                   dtb:
+ *                     type: number
+ */
 // Lấy danh sách các sinh viên có điểm trung bình từ 6.5 đến 8.0
 router.get("/students/getList", function (req, res) {
   const item = listStudent.filter((p) => p.dtb >= 6.5 && p.dtb <= 8.0);
